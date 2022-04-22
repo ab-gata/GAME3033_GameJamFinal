@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     private int distanceFromBall = 0;
     private int lives = 3;
     private bool pause = false;
-    private int tilesRestored = 0;
 
     // Components
     [SerializeField]
@@ -34,8 +33,6 @@ public class GameManager : MonoBehaviour
     TextMeshProUGUI distance;
     [SerializeField]
     TextMeshProUGUI livesText;
-    [SerializeField]
-    TextMeshProUGUI infoText;
 
     [SerializeField, Header("GameOver Elements")]
     private GameObject gameoverHUD;
@@ -43,8 +40,6 @@ public class GameManager : MonoBehaviour
     private TextMeshProUGUI gameoverScoreText;
     [SerializeField]
     private TextMeshProUGUI gameoverTimeText;
-    [SerializeField]
-    private TextMeshProUGUI tilesRestoredScoreText;
 
     [SerializeField, Header("Pause HUD")]
     private GameObject pauseHUD;
@@ -74,25 +69,26 @@ public class GameManager : MonoBehaviour
         timerText.text = ((int)timer).ToString() + "s";
         distance.text = distanceFromBall + "m";
         livesText.text = "[lives] " + lives;
-        infoText.text = "YO WHAT";
     }
 
     private void TimerRunOut()
     {
         LoseLives();
         timer = 10.9f;
+        overallTime += 10.9f;
     }
 
     // When a pick up is collect, spawn another one
     public void AddPickUp()
     {
+        // Add score
         score += 10;
+
+        // Set timer
+        overallTime += 10.9f - timer;
         timer = 10.9f;
-        //pickUps++;
-        //if (pickUps >= 3)
-        //{
-        //    pickUps = 0;
-        //}
+
+        // Place pick up elsewhere
         pickUpObject.transform.position = tileGrid.GetPickUpSpawnPos().position;
     }
 
@@ -107,7 +103,7 @@ public class GameManager : MonoBehaviour
         {
             pause = true;
             gameoverScoreText.text = "SCORE\n" + score;
-            gameoverTimeText.text = "SURVIVAL TIME\n" + overallTime;
+            gameoverTimeText.text = "SURVIVAL TIME\n" + (int)overallTime + " sec.";
             gameoverHUD.SetActive(true);
             gameoverHUD.GetComponent<AudioSource>().Play();
         }
